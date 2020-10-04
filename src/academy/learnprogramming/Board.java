@@ -20,9 +20,9 @@ public class Board {
 
     int fieldCount = 0;
 
-    public Board(int sizeX, int sizeY, int bombCount) {
+    public Board(int sizeXPlayer, int sizeYPlayer, int bombsPlayer) {
 
-        if (sizeX > 28 || sizeY > 28 || bombCount > ((sizeX * sizeY)/4) || sizeX < 10 || sizeY < 10){
+        if (sizeXPlayer > 28 || sizeYPlayer > 28 || bombsPlayer >= ((sizeXPlayer * sizeYPlayer)/4) || sizeXPlayer < 10 || sizeYPlayer < 10){
             System.out.println("Sizes X and Y shall be within 10-28, bomb count shall not exceed 1/4 of board area. \n" +
                     "Setting 16x16 board with 32 bombs.");
 
@@ -30,11 +30,14 @@ public class Board {
             this.sizeY = 16;
             this.bombCount = 32;
 
-        }
 
-        this.sizeX = sizeX; // +1 for borders
-        this.sizeY = sizeY;
-        this.bombCount = bombCount;
+        } else {
+
+            this.sizeX = sizeXPlayer;
+            this.sizeY = sizeYPlayer;
+            this.bombCount = bombsPlayer;
+
+        }
 
 
         // making borders
@@ -47,7 +50,7 @@ public class Board {
                 initBoard.put(fieldCount, new Cell(j, i));
 
                 if (i == 0 || i == sizeY + 1 || j == 0 || j == sizeX + 1){
-                    System.out.println("i: "+ i + " j: " + j);
+//                    System.out.println("i: "+ i + " j: " + j);
                     initBoard.get(fieldCount).makeBorder();
                 }
 
@@ -63,11 +66,17 @@ public class Board {
 
         while(bombs < bombCount){
             picker = 1 + (int) (Math.random() * fieldCount);
-            System.out.println("Picker: " + picker);
+//            System.out.println("Picker: " + picker);
             if (!initBoard.get(picker).isMine() && !initBoard.get(picker).isBorder()){
                 initBoard.get(picker).makeMine();
                 bombs++;
             }
+        }
+
+
+        // making numbered fields
+        for (int i = 1; i < fieldCount; i++){
+            fieldCheck(i);
         }
 
 
@@ -102,6 +111,43 @@ public class Board {
 
     }
 
+    int rowUp;
+    int rowDown;
+    int surrBombs = 0;
 
+    private void fieldCheck(int fieldNumber){
+        if (!initBoard.get(fieldNumber).isBorder() && !initBoard.get(fieldNumber).isMine()){
+
+            rowUp = fieldNumber - sizeX;
+            rowDown = fieldNumber + sizeX;
+
+            for (int i = 1; i <=3; i++){
+                if (initBoard.get(rowUp - i).isMine()){
+                    surrBombs++;
+                }
+            }
+
+            if (initBoard.get(fieldNumber - 1).isMine()){
+                surrBombs++;
+            }
+
+            if (initBoard.get(fieldNumber + 1).isMine()){
+                surrBombs++;
+            }
+
+            for (int i = 1; i <=3; i++){
+                if (initBoard.get(rowDown + i).isMine()){
+                    surrBombs++;
+                }
+            }
+
+            initBoard.get(fieldNumber).makeNumber(surrBombs);
+
+        }
+
+
+
+        surrBombs = 0;
+    }
 
 }

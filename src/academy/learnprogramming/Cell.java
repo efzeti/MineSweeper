@@ -16,11 +16,11 @@ public class Cell {
     public static final String ANSI_WHITE = "\u001B[37m";
 
 
-    boolean isBorder;
-    boolean isMine;
+    private boolean isBorder;
+    private boolean isMine;
 
-    int x;
-    int y;
+    private int x;
+    private int y;
 
     boolean isCovered;
     boolean isFlagged;
@@ -82,7 +82,7 @@ public class Cell {
                 symbol = ANSI_RESET + bombs + ANSI_RESET;
                 break;
         }
-        symbol = ANSI_YELLOW + "¤" + ANSI_RESET;
+//        symbol = ANSI_YELLOW + "¤" + ANSI_RESET;
     }
 
     public String getSymbol(){
@@ -95,5 +95,19 @@ public class Cell {
 
     }
 
+    public boolean isBorder() {
+        return isBorder;
+    }
 
+    public boolean isMine() {
+        return isMine;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
 }
