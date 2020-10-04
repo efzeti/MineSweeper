@@ -64,9 +64,7 @@ public class Board {
         while(bombs < bombCount){
             picker = 1 + (int) (Math.random() * fieldCount);
             System.out.println("Picker: " + picker);
-            initBoard.get(1);
-            initBoard.get(fieldCount);
-            if (!initBoard.get(picker).isMine && !initBoard.get(picker).isBorder){
+            if (!initBoard.get(picker).isMine() && !initBoard.get(picker).isBorder()){
                 initBoard.get(picker).makeMine();
                 bombs++;
             }
@@ -78,9 +76,11 @@ public class Board {
         System.out.println(bombs + " bombs made.");
 
 
+
+
     }
 
-    
+
 
     public void show(){
 
@@ -101,5 +101,7 @@ public class Board {
         }
 
     }
+
+
 
 }
