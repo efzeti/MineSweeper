@@ -1,10 +1,7 @@
 package academy.learnprogramming;
 
 import java.sql.SQLOutput;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Board {
 
@@ -89,24 +86,64 @@ public class Board {
 
     }
 
-
+boolean isFirstShow = true;
 
     public void show(){
 
         fieldCount = 0;
 
-        System.out.println("  ____    __  ____   _  ______  __  __  __  _____  _____   "
-                + "\n |    \\  /  ||    \\ | ||   ___||  \\/  \\|  ||     ||     |  "
-                + "\n |     \\/   ||     \\| | `-.`-. |     /\\   ||    _||     \\  "
-                + "\n |__/\\__/|__||__/\\____||______||____/  \\__||___|  |__|\\__\\ ");
+        if (isFirstShow) {
+            System.out.println("  ____    __  ____   _  ______  __  __  __  _____  _____   "
+                    + "\n |    \\  /  ||    \\ | ||   ___||  \\/  \\|  ||     ||     |  "
+                    + "\n |     \\/   ||     \\| | `-.`-. |     /\\   ||    _||     \\  "
+                    + "\n |__/\\__/|__||__/\\____||______||____/  \\__||___|  |__|\\__\\ ");
 
-        System.out.println("MINESWEEPER v0.1 board: " + sizeX + "x" + sizeY + " bombs: " +bombCount);
+            System.out.println("MINESWEEPER v0.1 board: " + sizeX + "x" + sizeY + " bombs: " + bombCount);
+            isFirstShow = false;
+        }
+        
         for(int i = 0; i <=sizeY + 1; i++) {
             for (int j = 0; j <= sizeX + 1; j++) {
                 fieldCount++;
                 System.out.print(initBoard.get(fieldCount).getSymbol() + " ");
             }
             System.out.println();
+        }
+
+    }
+
+    Scanner s = new Scanner(System.in);
+
+    public void click(){
+
+        int index;
+
+        System.out.print("Select column: ");
+        String stringX = s.next();
+        System.out.print("Select row: ");
+        String stringY = s.next();
+
+        if (stringX.chars().allMatch( Character::isDigit) && stringY.chars().allMatch( Character::isDigit)
+                && Integer.parseInt(stringX) > 0 && Integer.parseInt(stringX) <= sizeX
+                && Integer.parseInt(stringY) > 0 && Integer.parseInt(stringY) <= sizeY){
+
+                index = Integer.parseInt(stringY) * (sizeY + 2) + Integer.parseInt(stringX) + 1;
+
+            initBoard.get(index).makeVisible();
+            show();
+
+            System.out.println("Continue? (Y/N)");
+            if (s.next().toUpperCase().equals("Y")){
+                click();
+            }
+
+        } else {
+            System.out.println("Row and column indexes must be postitive integers smaller\nthan board dimensions. Continue? (Y/N)");
+            if (s.next().toUpperCase().equals("Y")){
+                click();
+            } else {
+                System.out.println("Exiting...");
+            }
         }
 
     }
