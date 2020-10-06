@@ -1,6 +1,5 @@
 package academy.learnprogramming;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class Board {
@@ -9,17 +8,13 @@ public class Board {
     int sizeY;
     int bombCount;
 
-    Map<Integer, Cell> initBoard = new HashMap<>();
-
-    Map<Integer, Cell> borderBoard;
-    Map<Integer, Cell> bombBoard;
-    Map<Integer, Cell> playBoard;
+    Map<Integer, Cell> gameBoard = new HashMap<>();
 
     int fieldCount = 0;
 
     public Board(int sizeXPlayer, int sizeYPlayer, int bombsPlayer) {
 
-        if (sizeXPlayer > 28 || sizeYPlayer > 28 || bombsPlayer >= ((sizeXPlayer * sizeYPlayer)/4) || sizeXPlayer < 10 || sizeYPlayer < 10){
+        if (sizeXPlayer > 28 || sizeYPlayer > 28 || bombsPlayer >= ((sizeXPlayer * sizeYPlayer) / 4) || sizeXPlayer < 10 || sizeYPlayer < 10) {
             System.out.println("Sizes X and Y shall be within 10-28, bomb count shall not exceed 1/4 of board area. \n" +
                     "Setting 16x16 board with 32 bombs.");
 
@@ -39,18 +34,17 @@ public class Board {
 
         // making borders
 
-        for (int i = 0; i <= sizeY + 1;i++){
-            for (int j = 0; j <= sizeX + 1;j++){
+        for (int i = 0; i <= sizeY + 1; i++) {
+            for (int j = 0; j <= sizeX + 1; j++) {
 
                 fieldCount++;
 
-                initBoard.put(fieldCount, new Cell(j, i));
+                gameBoard.put(fieldCount, new Cell(j, i));
 
-                if (i == 0 || i == sizeY + 1 || j == 0 || j == sizeX + 1){
+                if (i == 0 || i == sizeY + 1 || j == 0 || j == sizeX + 1) {
 //                    System.out.println("i: "+ i + " j: " + j);
-                    initBoard.get(fieldCount).makeBorder();
+                    gameBoard.get(fieldCount).makeBorder();
                 }
-
 
 
             }
@@ -61,34 +55,31 @@ public class Board {
         int bombs = 0;
         int picker;
 
-        while(bombs < bombCount){
+        while (bombs < bombCount) {
             picker = 1 + (int) (Math.random() * fieldCount);
 //            System.out.println("Picker: " + picker);
-            if (!initBoard.get(picker).isMine() && !initBoard.get(picker).isBorder()){
-                initBoard.get(picker).makeMine();
+            if (!gameBoard.get(picker).isMine() && !gameBoard.get(picker).isBorder()) {
+                gameBoard.get(picker).makeMine();
                 bombs++;
             }
         }
 
 
         // making numbered fields
-        for (int i = 1; i < fieldCount; i++){
+        for (int i = 1; i < fieldCount; i++) {
             fieldCheck(i);
         }
-
 
 
         System.out.println(fieldCount + " fields made.");
         System.out.println(bombs + " bombs made.");
 
 
-
-
     }
 
-boolean isFirstShow = true;
+    boolean isFirstShow = true;
 
-    public void show(){
+    public void show() {
 
         fieldCount = 0;
 
@@ -101,11 +92,11 @@ boolean isFirstShow = true;
             System.out.println("MINESWEEPER v0.1 board: " + sizeX + "x" + sizeY + " bombs: " + bombCount);
             isFirstShow = false;
         }
-        
-        for(int i = 0; i <=sizeY + 1; i++) {
+
+        for (int i = 0; i <= sizeY + 1; i++) {
             for (int j = 0; j <= sizeX + 1; j++) {
                 fieldCount++;
-                System.out.print(initBoard.get(fieldCount).getSymbol() + " ");
+                System.out.print(gameBoard.get(fieldCount).getSymbol() + " ");
             }
             System.out.println();
         }
@@ -114,7 +105,62 @@ boolean isFirstShow = true;
 
     Scanner s = new Scanner(System.in);
 
-    public void click(){
+    public void play() {
+
+        boolean firstTurn = true;
+        String chooseTurn = "E";
+
+        while(firstTurn || !chooseTurn.equals("E")){
+            firstTurn = false;
+            System.out.println("Type F to flag a field. Type U to uncover a cell. Type E to exit.");
+            chooseTurn = s.next().toUpperCase();
+
+            switch (chooseTurn){
+                case "F":
+                    flag();
+                    break;
+                case "U":
+                    click();
+                    break;
+            }
+
+        }
+
+
+    }
+
+    private void flag(){
+
+        int index;
+
+        System.out.print("Select column: ");
+        String stringX = s.next();
+        System.out.print("Select row: ");
+        String stringY = s.next();
+
+        if (stringX.chars().allMatch( Character::isDigit) && stringY.chars().allMatch( Character::isDigit)
+                && Integer.parseInt(stringX) > 0 && Integer.parseInt(stringX) <= sizeX
+                && Integer.parseInt(stringY) > 0 && Integer.parseInt(stringY) <= sizeY){
+
+            index = Integer.parseInt(stringY) * (sizeY + 2) + Integer.parseInt(stringX) + 1;
+
+            gameBoard.get(index).makeFlagged();
+            show();
+
+//            System.out.println("Continue? (Y/N)");
+//            if (s.next().toUpperCase().equals("Y")){
+//                click();
+//            }
+
+        } else {
+            System.out.println("Row and column indexes must be postitive integers smaller\nthan board dimensions.");
+        }
+
+    }
+
+
+
+    private void click(){
 
         int index;
 
@@ -129,21 +175,16 @@ boolean isFirstShow = true;
 
                 index = Integer.parseInt(stringY) * (sizeY + 2) + Integer.parseInt(stringX) + 1;
 
-            initBoard.get(index).makeVisible();
+            gameBoard.get(index).makeVisible();
             show();
 
-            System.out.println("Continue? (Y/N)");
-            if (s.next().toUpperCase().equals("Y")){
-                click();
-            }
+//            System.out.println("Continue? (Y/N)");
+//            if (s.next().toUpperCase().equals("Y")){
+//                click();
+//            }
 
         } else {
-            System.out.println("Row and column indexes must be postitive integers smaller\nthan board dimensions. Continue? (Y/N)");
-            if (s.next().toUpperCase().equals("Y")){
-                click();
-            } else {
-                System.out.println("Exiting...");
-            }
+            System.out.println("Row and column indexes must be postitive integers smaller\nthan board dimensions.");
         }
 
     }
@@ -152,33 +193,33 @@ boolean isFirstShow = true;
     int rowDown;
     int surrBombs = 0;
 
-    private void fieldCheck(int fieldNumber){
-        if (!initBoard.get(fieldNumber).isBorder() && !initBoard.get(fieldNumber).isMine()){
+    private void fieldCheck(int fieldNumber){ // checks how manyt bombs there are around a field and assigns a number to field
+        if (!gameBoard.get(fieldNumber).isBorder() && !gameBoard.get(fieldNumber).isMine()){
 
             rowUp = fieldNumber - sizeX;
             rowDown = fieldNumber + sizeX;
 
             for (int i = 1; i <=3; i++){
-                if (initBoard.get(rowUp - i).isMine()){
+                if (gameBoard.get(rowUp - i).isMine()){
                     surrBombs++;
                 }
             }
 
-            if (initBoard.get(fieldNumber - 1).isMine()){
+            if (gameBoard.get(fieldNumber - 1).isMine()){
                 surrBombs++;
             }
 
-            if (initBoard.get(fieldNumber + 1).isMine()){
+            if (gameBoard.get(fieldNumber + 1).isMine()){
                 surrBombs++;
             }
 
             for (int i = 1; i <=3; i++){
-                if (initBoard.get(rowDown + i).isMine()){
+                if (gameBoard.get(rowDown + i).isMine()){
                     surrBombs++;
                 }
             }
 
-            initBoard.get(fieldNumber).makeNumber(surrBombs);
+            gameBoard.get(fieldNumber).makeNumber(surrBombs);
 
         }
 
