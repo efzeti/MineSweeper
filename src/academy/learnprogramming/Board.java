@@ -109,8 +109,9 @@ public class Board {
 
         boolean firstTurn = true;
         String chooseTurn = "E";
+        boolean notLost = true;
 
-        while(firstTurn || !chooseTurn.equals("E")){
+        while(firstTurn || !chooseTurn.equals("E") && notLost){
             firstTurn = false;
             System.out.println("Type F to flag a field. Type U to uncover a cell. Type E to exit.");
             chooseTurn = s.next().toUpperCase();
@@ -120,7 +121,16 @@ public class Board {
                     flag();
                     break;
                 case "U":
-                    click();
+                    notLost = click();
+                    if (!notLost) {
+                        System.out.println("                                                       \n" +
+                                " __    _ _____  __   _   ____    _____  ______   __    \n" +
+                                " \\ \\  ///     \\|  | | | |    |  /     \\|   ___|_|  |_  \n" +
+                                "  \\ \\// |     ||  |_| | |    |_ |     | `-.`-.|_    _| \n" +
+                                "  /__/  \\_____/|______| |______|\\_____/|______| |__|   \n" +
+                                "                                                       \n" +
+                                "                                                       ");
+                    }
                     break;
             }
 
@@ -160,7 +170,9 @@ public class Board {
 
 
 
-    private void click(){
+    private boolean click(){
+
+        boolean notLost;
 
         int index;
 
@@ -175,7 +187,7 @@ public class Board {
 
                 index = Integer.parseInt(stringY) * (sizeY + 2) + Integer.parseInt(stringX) + 1;
 
-            gameBoard.get(index).makeVisible();
+            notLost = gameBoard.get(index).makeVisible();
             show();
 
 //            System.out.println("Continue? (Y/N)");
@@ -183,9 +195,12 @@ public class Board {
 //                click();
 //            }
 
+            return notLost;
         } else {
             System.out.println("Row and column indexes must be postitive integers smaller\nthan board dimensions.");
+            return true;
         }
+
 
     }
 
