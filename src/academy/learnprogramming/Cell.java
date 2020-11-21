@@ -4,6 +4,8 @@ import org.w3c.dom.ls.LSOutput;
 
 public class Cell {
 
+
+
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -14,6 +16,9 @@ public class Cell {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
+
+    private static boolean minesVisible = false;
+    private static String mineSymbol = ANSI_YELLOW + "¤" + ANSI_RESET;
 
 
     private boolean isBorder;
@@ -31,7 +36,7 @@ public class Cell {
         this.x = x;
         this.y = y;
         this.isBorder = false;
-        this.isCovered= false;
+        this.isCovered= true;
         this.isMine = false;
         this.isFlagged = false;
     }
@@ -39,57 +44,77 @@ public class Cell {
 
     public void makeBorder() {
         isBorder = true;
-        symbol = "█";//  "■"
+        symbol = "&";
         isCovered = false;
     }
 
     public void makeMine() {
         isMine = true;
-        symbol = ANSI_YELLOW + "¤" + ANSI_RESET;
+        symbol = mineSymbol;
     }
 
     public void makeNumber(int bombs) {
         switch (bombs){
-                case 1:
+            case 1:
                 symbol = ANSI_BLUE + bombs + ANSI_RESET;
                 break;
 
-                case 2:
+            case 2:
                 symbol = ANSI_GREEN + bombs + ANSI_RESET;
                 break;
 
-                case 3:
+            case 3:
                 symbol = ANSI_RED + bombs + ANSI_RESET;
                 break;
 
-                case 4:
+            case 4:
                 symbol = ANSI_PURPLE + bombs + ANSI_RESET;
                 break;
 
-                case 5:
+            case 5:
                 symbol = RED_BOLD + bombs + ANSI_RESET;
                 break;
 
-                case 6:
+            case 6:
                 symbol = ANSI_CYAN + bombs + ANSI_RESET;
                 break;
 
-                case 7:
+            case 7:
                 symbol = ANSI_BLACK + bombs + ANSI_RESET;
                 break;
 
-                case 8:
+            case 8:
                 symbol = ANSI_RESET + bombs + ANSI_RESET;
                 break;
         }
 //        symbol = ANSI_YELLOW + "¤" + ANSI_RESET;
     }
 
-    public String getSymbol(){
+    public boolean makeVisible(){
+        if (isMine){
+            minesVisible = true;
+            symbol = ANSI_RED + "X" + ANSI_RESET;
 
-        if (isCovered){
+            return false;
+        }
+        isCovered = false;
+
+        return true;
+    }
+
+    public void makeFlagged(){
+        isFlagged = true;
+    }
+
+    public String getSymbol() {
+
+        if(isMine && minesVisible){
+            return symbol;
+        } else if (isCovered){
             return "■";
-        } else {
+        } else if(isFlagged){
+            return ANSI_WHITE + "F" + ANSI_RESET;
+        } else{
             return symbol;
         }
 
@@ -110,4 +135,5 @@ public class Cell {
     public int getY() {
         return y;
     }
+
 }

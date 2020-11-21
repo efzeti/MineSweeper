@@ -185,7 +185,7 @@ public class Board {
                 && Integer.parseInt(stringX) > 0 && Integer.parseInt(stringX) <= sizeX
                 && Integer.parseInt(stringY) > 0 && Integer.parseInt(stringY) <= sizeY){
 
-                index = Integer.parseInt(stringY) * (sizeY + 2) + Integer.parseInt(stringX) + 1;
+            index = Integer.parseInt(stringY) * (sizeY + 2) + Integer.parseInt(stringX) + 1;
 
             notLost = gameBoard.get(index).makeVisible();
             show();
