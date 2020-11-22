@@ -36,7 +36,7 @@ public class Cell {
         this.x = x;
         this.y = y;
         this.isBorder = false;
-        this.isCovered= true;
+        this.isCovered= true;  // FALSE FOR TESTING
         this.isMine = false;
         this.isFlagged = false;
     }
