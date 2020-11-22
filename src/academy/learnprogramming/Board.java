@@ -150,6 +150,14 @@ public class Board {
                     break;
             }
 
+            if (gameWon()){
+                System.out.println(" __    _ _____  __   _   __  __  __  _____  ____   _  ___ \\n\n" +
+                        " \\ \\  ///     \\|  | | | |  \\/  \\|  |/     \\|    \\ | ||   |\\n\n" +
+                        "  \\ \\// |     ||  |_| | |     /\\   ||     ||     \\| ||___|\\n\n" +
+                        "  /__/  \\_____/|______| |____/  \\__|\\_____/|__/\\____||___|\\n");
+                break;
+            }
+
         }
 
 
@@ -230,7 +238,7 @@ public class Board {
     int rowDown;
     int surrBombs = 0;
 
-    private void fieldCheck(int fieldNumber){ // checks how manyt bombs there are around a field and assigns a number to field
+    private void fieldCheck(int fieldNumber){ // checks how many bombs there are around a field and assigns a number to field
         if (!gameBoard.get(fieldNumber).isBorder() && !gameBoard.get(fieldNumber).isMine())
         {
 
@@ -273,6 +281,18 @@ public class Board {
 
     private boolean gameWon()
     {
+
+        int bombsFlagged = 0;
+
+        for (Map.Entry<Integer, Cell> entry : gameBoard.entrySet())
+        {
+            bombsFlagged = entry.getValue().isMine() && entry.getValue().isFlagged? bombsFlagged + 1 : bombsFlagged;
+        }
+
+        if (bombsFlagged == this.bombCount)
+        {
+            return true;
+        }
 
         return false;
     }
