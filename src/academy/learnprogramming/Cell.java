@@ -27,8 +27,8 @@ public class Cell {
     private int x;
     private int y;
 
-    boolean isCovered;
-    boolean isFlagged;
+    private boolean isCovered;
+    private boolean isFlagged;
 
     String symbol = " ";
 
@@ -36,7 +36,7 @@ public class Cell {
         this.x = x;
         this.y = y;
         this.isBorder = false;
-        this.isCovered= true;  // FALSE FOR TESTING
+        this.isCovered = true;  // FALSE FOR TESTING
         this.isMine = false;
         this.isFlagged = false;
     }
@@ -103,7 +103,7 @@ public class Cell {
     }
 
     public void makeFlagged(){
-        isFlagged = true;
+        isFlagged = !isFlagged;
     }
 
     public String getSymbol() {
@@ -128,12 +128,11 @@ public class Cell {
         return isMine;
     }
 
-    public int getX() {
-        return x;
+    public boolean isFlagged() {
+        return isFlagged;
     }
 
-    public int getY() {
-        return y;
+    public void setFlagged(boolean flagged) {
+        isFlagged = flagged;
     }
-
 }
