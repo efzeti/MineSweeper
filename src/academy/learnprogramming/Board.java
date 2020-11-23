@@ -17,7 +17,7 @@ public class Board {
 
         if (sizeXPlayer > 28 || sizeYPlayer > 28 || bombsPlayer >= ((sizeXPlayer * sizeYPlayer) / 4) || sizeXPlayer < 8 || sizeYPlayer < 8)
         {
-            System.out.println("Sizes X and Y shall be within 10-28, bomb count shall not exceed 1/4 of board area. \n" +
+            System.out.println("Sizes X and Y shall be within 8-28, bomb count shall not exceed 1/4 of board area. \n" +
                     "Setting 16x16 board with 32 bombs.");
 
             this.sizeX = 16;
@@ -30,7 +30,9 @@ public class Board {
         {
             this.sizeX = sizeXPlayer;
             this.sizeY = sizeYPlayer;
-            this.bombCount = bombsPlayer;
+
+            this.bombCount = bombsPlayer < 1 ? sizeXPlayer * sizeYPlayer / 8 : bombsPlayer;
+
 
         }
 
@@ -87,6 +89,8 @@ public class Board {
 
     boolean isFirstShow = true;
 
+
+
     public void show()
     {
 
@@ -126,6 +130,9 @@ public class Board {
 
         while(firstTurn || !chooseTurn.equals("E") && notLost)
         {
+
+            show();
+
             firstTurn = false;
             System.out.println("Type F to flag a field. Type U to uncover a cell. Type E to exit.");
             chooseTurn = s.next().toUpperCase();
@@ -143,18 +150,28 @@ public class Board {
                                 " __    _ _____  __   _   ____    _____  ______   __    \n" +
                                 " \\ \\  ///     \\|  | | | |    |  /     \\|   ___|_|  |_  \n" +
                                 "  \\ \\// |     ||  |_| | |    |_ |     | `-.`-.|_    _| \n" +
-                                "  /__/  \\_____/|______| |______|\\_____/|______| |__|   \n" +
-                                "                                                       \n" +
-                                "                                                       ");
+                                "  /__/  \\_____/|______| |______|\\_____/|______| |__|   \n");
+
+                        for (Map.Entry<Integer, Cell> cell : gameBoard.entrySet())
+                        {
+                            if (cell.getValue().isMine())
+                            {
+                                cell.getValue().makeVisible();
+                            }
+                        }
+
+                        show();
+
                     }
                     break;
             }
 
             if (gameWon()){
-                System.out.println(" __    _ _____  __   _   __  __  __  _____  ____   _  ___ \\n\n" +
-                        " \\ \\  ///     \\|  | | | |  \\/  \\|  |/     \\|    \\ | ||   |\\n\n" +
-                        "  \\ \\// |     ||  |_| | |     /\\   ||     ||     \\| ||___|\\n\n" +
-                        "  /__/  \\_____/|______| |____/  \\__|\\_____/|__/\\____||___|\\n");
+                System.out.println(" __    _ _____  __   _   __  __  __  _____  ____   _  ___ \n" +
+                        " \\ \\  ///     \\|  | | | |  \\/  \\|  |/     \\|    \\ | ||   |\n" +
+                        "  \\ \\// |     ||  |_| | |     /\\   ||     ||     \\| ||___|\n" +
+                        "  /__/  \\_____/|______| |____/  \\__|\\_____/|__/\\____||___|");
+                show();
                 break;
             }
 
@@ -180,7 +197,7 @@ public class Board {
             index = Integer.parseInt(stringY) * (sizeY + 2) + Integer.parseInt(stringX) + 1;
 
             gameBoard.get(index).makeFlagged();
-            show();
+//            show();
 
 //            System.out.println("Continue? (Y/N)");
 //            if (s.next().toUpperCase().equals("Y")){
@@ -197,7 +214,8 @@ public class Board {
 
 
 
-    private boolean click(){
+    private boolean click()
+    {
 
         boolean notLost;
 
@@ -216,7 +234,7 @@ public class Board {
             index = Integer.parseInt(stringY) * (sizeY + 2) + Integer.parseInt(stringX) + 1;
 
             notLost = gameBoard.get(index).makeVisible();
-            show();
+//            show();
 
 //            System.out.println("Continue? (Y/N)");
 //            if (s.next().toUpperCase().equals("Y")){
@@ -283,13 +301,15 @@ public class Board {
     {
 
         int bombsFlagged = 0;
+        int fieldsFlagged = 0;
 
         for (Map.Entry<Integer, Cell> entry : gameBoard.entrySet())
         {
-            bombsFlagged = entry.getValue().isMine() && entry.getValue().isFlagged? bombsFlagged + 1 : bombsFlagged;
+            bombsFlagged = entry.getValue().isMine() && entry.getValue().isFlagged()? bombsFlagged + 1 : bombsFlagged;
+            fieldsFlagged = entry.getValue().isFlagged()? fieldsFlagged + 1 : fieldsFlagged;
         }
 
-        if (bombsFlagged == this.bombCount)
+        if (bombsFlagged == this.bombCount && fieldsFlagged == bombsFlagged)
         {
             return true;
         }
