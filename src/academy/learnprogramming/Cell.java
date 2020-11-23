@@ -91,11 +91,17 @@ public class Cell {
     }
 
     public boolean makeVisible(){
-        if (isMine){
+        if (isMine)
+        {
             minesVisible = true;
             symbol = ANSI_RED + "X" + ANSI_RESET;
 
             return false;
+        }
+
+        if (isFlagged)
+        {
+            isFlagged = false;
         }
         isCovered = false;
 
@@ -103,7 +109,15 @@ public class Cell {
     }
 
     public void makeFlagged(){
-        isFlagged = !isFlagged;
+        if (isCovered || (!isCovered && isFlagged))
+        {
+            isFlagged = !isFlagged;
+            isCovered = !isCovered;
+        }
+        else
+        {
+            System.out.println("Cannot flag uncovered cell.");
+        }
     }
 
     public String getSymbol() {
@@ -114,7 +128,9 @@ public class Cell {
             return "■";
         } else if(isFlagged){
             return ANSI_WHITE + "F" + ANSI_RESET;
-        } else{
+        }
+        else
+        {
             return symbol;
         }
 
